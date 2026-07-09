@@ -1,0 +1,18 @@
+{
+  "node": "@openserp/n8n-nodes-openserp.openSerp",
+  "nodeVersion": "1.0",
+  "codexVersion": "1.0",
+  "categories": ["Data & Storage", "Development"],
+  "resources": {
+    "credentialDocumentation": [
+      {
+        "url": "https://openserp.org/docs/cloud"
+      }
+    ],
+    "primaryDocumentation": [
+      {
+        "url": "https://openserp.org/docs"
+      }
+    ]
+  }
+}

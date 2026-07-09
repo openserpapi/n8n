@@ -1,0 +1,75 @@
+{
+  "name": "@openserp/n8n-nodes-openserp",
+  "version": "0.1.4",
+  "description": "n8n community node for OpenSERP search, image search, extraction, account, and engine status operations.",
+  "license": "MIT",
+  "author": {
+    "name": "OpenSERP"
+  },
+  "homepage": "https://openserp.org",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/openserpapi/n8n.git"
+  },
+  "bugs": {
+    "url": "https://github.com/openserpapi/n8n/issues"
+  },
+  "keywords": [
+    "n8n-community-node-package",
+    "n8n",
+    "openserp",
+    "serp",
+    "serp-api",
+    "search",
+    "search-api",
+    "image-search",
+    "seo",
+    "automation"
+  ],
+  "main": "dist/nodes/OpenSerp/OpenSerp.node.js",
+  "types": "dist/nodes/OpenSerp/OpenSerp.node.d.ts",
+  "files": [
+    "credentials",
+    "dist",
+    "nodes",
+    "README.md",
+    "LICENSE.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json && node scripts/copy-assets.mjs",
+    "clean": "node scripts/clean.mjs",
+    "lint": "eslint package.json credentials/**/*.ts nodes/**/*.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@openserp/sdk": "^0.2.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.30",
+    "@typescript-eslint/parser": "^8.32.1",
+    "eslint": "^8.57.1",
+    "eslint-plugin-n8n-nodes-base": "^1.16.6",
+    "jsonc-eslint-parser": "^2.4.0",
+    "n8n-workflow": "^2.16.0",
+    "typescript": "^5.8.3"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "overrides": {
+    "@ungap/structured-clone": "1.3.2"
+  },
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "credentials": [
+      "dist/credentials/OpenSerpApi.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/OpenSerp/OpenSerp.node.js"
+    ]
+  }
+}
