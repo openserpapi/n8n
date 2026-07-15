@@ -5,7 +5,7 @@ export class OpenSerpApi implements ICredentialType {
 
   displayName = "OpenSERP API";
 
-  documentationUrl = "https://openserp.org/docs/integrations/n8n";
+  documentationUrl = "https://openserp.org/docs/cloud";
 
   properties: INodeProperties[] = [
     {

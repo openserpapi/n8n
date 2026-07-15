@@ -107,11 +107,12 @@ const commonQueryProperties: INodeProperties[] = [
 		displayName: 'Limit',
 		name: 'limit',
 		type: 'number',
-		default: 50,
+		default: 10,
 		typeOptions: {
 			minValue: 1,
 		},
-		description: 'Max number of results to return',
+		description:
+			'Max number of results to return. On OpenSERP Cloud, cost scales with results (about 1 credit per 10), so a larger limit costs more per search. Matches the API default of 10.',
 	},
 	{
 		displayName: 'Region',
