@@ -1,6 +1,6 @@
 {
   "name": "@openserp/n8n-nodes-openserp",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "n8n community node for OpenSERP search, image search, extraction, account, and engine status operations.",
   "license": "MIT",
   "author": {
@@ -42,7 +42,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@openserp/sdk": "^0.2.4"
+    "@openserp/sdk": "^0.2.6"
   },
   "devDependencies": {
     "@types/node": "^22.15.30",

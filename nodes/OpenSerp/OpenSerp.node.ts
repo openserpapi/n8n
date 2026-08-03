@@ -1,5 +1,6 @@
 import { OpenSERP } from '@openserp/sdk';
 import type {
+	BatchExtractParams,
 	Engine,
 	ExtractMode,
 	ExtractParams,
@@ -25,7 +26,7 @@ import {
 type Resource = 'search' | 'image' | 'extract' | 'account' | 'engines';
 type SearchOperation = 'single' | 'mega';
 type ImageOperation = 'single' | 'mega';
-type ExtractOperation = 'getContent';
+type ExtractOperation = 'getContent' | 'getContentBatch';
 type AccountOperation = 'getMe' | 'pricing';
 type EnginesOperation = 'capabilities' | 'status';
 
@@ -307,6 +308,12 @@ export class OpenSerp implements INodeType {
             description: "Extract readable content from a URL",
             action: "Extract readable content from a URL",
           },
+          {
+            name: "Get Content (Many URLs)",
+            value: "getContentBatch",
+            description: "Extract readable content from up to 20 URLs in one request",
+            action: "Extract readable content from many pages",
+          },
         ],
       },
       {
@@ -473,6 +480,22 @@ export class OpenSerp implements INodeType {
         description: "Absolute URL to fetch and extract",
       },
       {
+        displayName: "URLs",
+        name: "urls",
+        type: "string",
+        default: "",
+        required: true,
+        displayOptions: {
+          show: {
+            resource: ["extract"],
+            operation: ["getContentBatch"],
+          },
+        },
+        placeholder: "https://openserp.org\nhttps://openserp.org/docs",
+        description:
+          "Up to 20 absolute URLs, one per line. Duplicates are dropped. A URL that fails returns an item with an error instead of failing the batch.",
+      },
+      {
         displayName: "Extract Options",
         name: "extractOptions",
         type: "collection",
@@ -481,7 +504,7 @@ export class OpenSerp implements INodeType {
         displayOptions: {
           show: {
             resource: ["extract"],
-            operation: ["getContent"],
+            operation: ["getContent", "getContentBatch"],
           },
         },
         options: [
@@ -517,6 +540,15 @@ export class OpenSerp implements INodeType {
             default: "auto",
             options: EXTRACT_MODE_OPTIONS,
             description: "Extraction strategy",
+          },
+          {
+            displayName: "Region",
+            name: "region",
+            type: "string",
+            default: "",
+            placeholder: "DE",
+            description:
+              "Two-letter country code to extract from, for geo-fenced or localized pages. On OpenSERP Cloud this adds 1 credit per extracted URL.",
           },
           {
             displayName: "Use llms.txt",
@@ -562,7 +594,14 @@ export class OpenSerp implements INodeType {
         }
 
         if (resource === "extract") {
-          this.getNodeParameter("operation", itemIndex) as ExtractOperation;
+          const operation = this.getNodeParameter("operation", itemIndex) as ExtractOperation;
+          if (operation === "getContentBatch") {
+            // One output item per URL - downstream nodes then treat each page
+            // like any other item, including the ones that carry an error.
+            const response = await client.batchExtract(buildBatchExtractParams(this, itemIndex));
+            outputItems.push(...fanOutResults(response, client, itemIndex));
+            continue;
+          }
           const response = await client.extract(buildExtractParams(this, itemIndex));
           outputItems.push(singleItem(response, client, itemIndex));
           continue;
@@ -660,8 +699,33 @@ function buildExtractParams(context: IExecuteFunctions, itemIndex: number): Extr
 		minRunes: numberValue(options.minRunes),
 		clean: options.clean as boolean | undefined,
 		useLlmsTxt: options.useLlmsTxt as boolean | undefined,
+		region: stringValue(options.region),
 		format: 'json',
 	}) as ExtractParams;
+}
+
+function buildBatchExtractParams(
+	context: IExecuteFunctions,
+	itemIndex: number,
+): BatchExtractParams {
+	const options = context.getNodeParameter('extractOptions', itemIndex, {}) as IDataObject;
+
+	return compactObject({
+		urls: splitUrlList(context.getNodeParameter('urls', itemIndex) as string),
+		mode: options.mode as ExtractMode | undefined,
+		lang: stringValue(options.lang),
+		minRunes: numberValue(options.minRunes),
+		clean: options.clean as boolean | undefined,
+		useLlmsTxt: options.useLlmsTxt as boolean | undefined,
+		region: stringValue(options.region),
+	}) as BatchExtractParams;
+}
+
+function splitUrlList(raw: string): string[] {
+	return String(raw ?? '')
+		.split(/\r?\n/)
+		.map((url) => url.trim())
+		.filter(Boolean);
 }
 
 function baseQueryParams(context: IExecuteFunctions, itemIndex: number): Partial<SearchParams> {

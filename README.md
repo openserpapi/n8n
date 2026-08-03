@@ -3,7 +3,7 @@
 [![npm version](https://img.shields.io/npm/v/@openserp/n8n-nodes-openserp.svg)](https://www.npmjs.com/package/@openserp/n8n-nodes-openserp)
 [![license](https://img.shields.io/npm/l/@openserp/n8n-nodes-openserp.svg)](https://github.com/openserpapi/n8n/blob/main/LICENSE.md)
 
-n8n community node for OpenSERP. It supports web search, image search, URL extraction, OpenSERP Cloud account/pricing calls, and Cloud engine capability/status calls.
+n8n community node for OpenSERP. It supports web search, image search, single and batch URL extraction, OpenSERP Cloud account/pricing calls, and Cloud engine capability/status calls.
 
 ## Install
 
@@ -48,6 +48,7 @@ The credential test calls `/v1/me` when an API key is present and `/health` when
 - **Image: Single** returns one n8n item per image result from one engine.
 - **Image: Mega** returns one n8n item per merged image result across selected engines.
 - **Extract: Get Content** returns extracted content for one URL.
+- **Extract: Get Content (Many URLs)** returns one n8n item per URL for up to 20 URLs in a single request. A URL that fails becomes an item carrying an `error` instead of failing the whole batch.
 - **Account: Get Me / Get Pricing** returns OpenSERP Cloud account and pricing metadata.
 - **Engines: Get Capabilities / Get Status** returns OpenSERP Cloud engine metadata.
 
@@ -90,6 +91,18 @@ Operation: Get Content
 URL: https://openserp.org
 Mode: Auto
 ```
+
+Extract several URLs in one request:
+
+```text
+Resource: Extract
+Operation: Get Content (Many URLs)
+URLs: https://openserp.org
+      https://openserp.org/docs
+Mode: Auto
+```
+
+Read a geo-fenced page as a local visitor by setting the **Region** extract option to a two-letter country code such as `DE`. On OpenSERP Cloud this adds 1 credit per extracted URL.
 
 ## Resources
 
