@@ -102,7 +102,7 @@ const commonQueryProperties: INodeProperties[] = [
 		default: '',
 		required: true,
 		placeholder: 'openserp',
-		description: 'Search query text',
+		description: 'Search query text. When used as an AI Agent tool, this is the main parameter to let the model fill',
 	},
 	{
 		displayName: 'Limit',
@@ -111,6 +111,7 @@ const commonQueryProperties: INodeProperties[] = [
 		default: 50,
 		typeOptions: {
 			minValue: 1,
+			maxValue: 100,
 		},
 		description: 'Max number of results to return',
 	},
@@ -202,8 +203,9 @@ export class OpenSerp implements INodeType {
     defaults: {
       name: "OpenSERP",
     },
-    inputs: ["main"],
-    outputs: ["main"],
+    usableAsTool: true,
+    inputs: [NodeConnectionTypes.Main],
+    outputs: [NodeConnectionTypes.Main],
     credentials: [
       {
         name: "openSerpApi",

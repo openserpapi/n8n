@@ -1,7 +1,7 @@
 {
   "name": "@openserp/n8n-nodes-openserp",
-  "version": "0.1.5",
-  "description": "n8n community node for OpenSERP search, image search, extraction, account, and engine status operations.",
+  "version": "0.2.0",
+  "description": "n8n community node and AI Agent tool for OpenSERP search, image search, extraction, account, and engine status operations.",
   "license": "MIT",
   "author": {
     "name": "OpenSERP"
@@ -23,6 +23,8 @@
     "search",
     "search-api",
     "image-search",
+    "ai-agent",
+    "ai-tool",
     "seo",
     "automation"
   ],
