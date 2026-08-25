@@ -12,7 +12,6 @@ import type {
 	SearchParams,
 } from '@openserp/sdk';
 import {
-	NodeConnectionTypes,
 	NodeOperationError,
 	type ICredentialDataDecryptedObject,
 	type IExecuteFunctions,
@@ -102,7 +101,8 @@ const commonQueryProperties: INodeProperties[] = [
 		default: '',
 		required: true,
 		placeholder: 'openserp',
-		description: 'Search query text',
+		description:
+			'Search query text. When used as an AI Agent tool, this is the main parameter to let the model fill.',
 	},
 	{
 		displayName: 'Limit',
@@ -202,6 +202,7 @@ export class OpenSerp implements INodeType {
     defaults: {
       name: "OpenSERP",
     },
+    usableAsTool: true,
     inputs: ["main"],
     outputs: ["main"],
     credentials: [
