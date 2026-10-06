@@ -1,4 +1,4 @@
-import { OpenSERP } from '@openserp/sdk';
+import { OpenSERP, SERPError } from '@openserp/sdk';
 import type {
 	BatchExtractParams,
 	Engine,
@@ -41,7 +41,7 @@ const ENGINE_OPTIONS = [
 const MODE_OPTIONS = [
 	{ name: 'Balanced', value: 'balanced', description: 'Query selected engines and merge results' },
 	{ name: 'Any', value: 'any', description: 'Return the first successful engine result' },
-	{ name: 'Fast', value: 'fast', description: 'Use the fastest healthy engine' },
+	{ name: 'Fast', value: 'fast', description: 'Prioritize healthy, fast engines and return the first successful result' },
 ];
 
 const EXTRACT_MODE_OPTIONS = [
@@ -143,7 +143,7 @@ const commonQueryProperties: INodeProperties[] = [
 				type: 'string',
 				default: '',
 				placeholder: '20250101..20250131',
-				description: 'Date interval in YYYYMMDD..YYYYMMDD format',
+				description: 'Published-date range YYYYMMDD..YYYYMMDD. Cloud web search: Google and Ecosia only; unsupported filters return 400 without charge.',
 			},
 			{
 				displayName: 'File Extension',
@@ -183,7 +183,7 @@ const commonQueryProperties: INodeProperties[] = [
 				typeOptions: {
 					minValue: 0,
 				},
-				description: 'Pagination offset',
+				description: 'Result offset. Cloud: use multiples of 10 for Google, Bing, Yandex; Baidu supports early pages, Ecosia any offset, DuckDuckGo none. Balanced mega requires 0.',
 			},
 		],
 	},
@@ -625,6 +625,7 @@ export class OpenSerp implements INodeType {
           outputItems.push({
             json: {
               error: formatError(error),
+              ...errorDetails(error),
             },
             pairedItem: {
               item: itemIndex,
@@ -823,6 +824,7 @@ function singleItem(response: unknown, client: OpenSERP, itemIndex: number): INo
 function telemetryMeta(envelope: IDataObject, client: OpenSERP): IDataObject {
 	return compactObject({
 		response_meta: envelope.meta as IDataObject | undefined,
+		pagination: envelope.pagination as IDataObject | undefined,
 		status: client.lastResponse?.status,
 		request_id: client.lastResponse?.requestId,
 		credits: client.lastResponse?.credits as IDataObject | undefined,
@@ -902,4 +904,14 @@ function toOperationError(error: unknown): Error {
 
 	error.message = formatError(error);
 	return error;
+}
+
+function errorDetails(error: unknown): IDataObject {
+  if (!(error instanceof SERPError)) return {};
+  return compactObject({
+    status: error.status,
+    code: error.code,
+    request_id: error.requestId,
+    retry_after: error.retryAfter,
+  }) as IDataObject;
 }

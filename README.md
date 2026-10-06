@@ -90,6 +90,16 @@ The `$fromAI()` function and the model-fill button only work while the node is c
 
 Search and image operations add `openserp_meta` to the first output item. This contains request telemetry such as status, request ID, credits, engine used, and response metadata.
 
+## Cloud paging and errors
+
+The Cloud credential sends `Authorization: Bearer` with your API key (`osk_live_xxx`). For web paging, keep **Limit** at 10, add **Start**, and use the previous response's `openserp_meta.pagination.next_start` while `has_more` is true. Google, Bing, and Yandex accept multiples of 10; Baidu supports early pages, Ecosia any offset, and DuckDuckGo only the first page. **Search / Mega / Balanced** rejects Start above 0; use **Single**, **Any**, or **Fast** for later pages.
+
+**Date Range** is a publication-date range (`YYYYMMDD..YYYYMMDD`), supported by Cloud web search on Google and Ecosia. Unsupported paging/date filters return `400 invalid_request` without charge. Change the parameters before retrying.
+
+**Engines / Get Status** returns operational status and latency. **Any** starts engines in your order, overlapping slow attempts; **Fast** prioritizes recent health and latency. Use `openserp_meta.engine_used` for the winner; `engines_tried` and `engines_skipped` may be absent.
+
+When **Continue On Fail** is enabled, failed items include `status`, `code`, `request_id`, and `retry_after` when available. Honor the delay when scheduling retries; `503 engine_unavailable` carries 60 seconds. The node does not retry automatically.
+
 ## Good Workflow Fits
 
 - Feed fresh Google or Bing results into an AI workflow.
