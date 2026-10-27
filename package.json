@@ -40,10 +40,10 @@
     "examples"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.json && node scripts/copy-assets.mjs",
+    "build": "node node_modules/typescript/bin/tsc -p tsconfig.json && node scripts/copy-assets.mjs",
     "clean": "node scripts/clean.mjs",
     "lint": "eslint package.json credentials/**/*.ts nodes/**/*.ts",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "typecheck": "node node_modules/typescript/bin/tsc -p tsconfig.json --noEmit",
     "test": "node --test test/*.test.cjs",
     "scan:local": "node scripts/scan-local.mjs",
     "scan:published": "node scripts/scan-published.mjs"
