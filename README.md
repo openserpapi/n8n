@@ -155,3 +155,35 @@ Read a geo-fenced page as a local visitor by setting the **Region** extract opti
 - [OpenSERP Cloud](https://openserp.org)
 - [Self-hosted OpenSERP server](https://github.com/karust/openserp)
 - [Source and issues](https://github.com/openserpapi/n8n)
+
+## Example workflow
+
+Import [`examples/web-search.json`](examples/web-search.json) into n8n, select an
+**OpenSERP API** credential with your API key (`osk_live_xxx`), then run the workflow.
+Cloud requests use `Authorization: Bearer` authentication. For a self-hosted
+OpenSERP server, leave the key empty and set its base URL in the credential.
+
+## Development
+
+The node uses n8n HTTP helpers and has no runtime dependencies. Keep node and
+credential names, parameter values, and output items compatible with existing workflows.
+
+```bash
+npm install
+npm run lint
+npm run typecheck
+npm run build
+npm test
+npm run scan:local
+npm pack --dry-run
+```
+
+Run the example in a local n8n instance before releasing. Publish through the
+GitHub Actions workflow with npm provenance. After publishing, scan the exact
+release:
+
+```bash
+npm run scan:published -- @openserp/n8n-nodes-openserp@VERSION
+```
+
+See [n8n verification requirements](https://docs.n8n.io/connect/create-nodes/build-your-node/reference/verification-guidelines.md).

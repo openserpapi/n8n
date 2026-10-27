@@ -3,6 +3,8 @@ import type { ICredentialTestRequest, ICredentialType, INodeProperties } from "n
 export class OpenSerpApi implements ICredentialType {
   name = "openSerpApi";
 
+  icon = "file:../nodes/OpenSerp/openserp.svg" as const;
+
   displayName = "OpenSERP API";
 
   documentationUrl = "https://openserp.org/docs/cloud";

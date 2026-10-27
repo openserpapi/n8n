@@ -1,0 +1,51 @@
+{
+  "name": "OpenSERP web search",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "be478942-4dac-41fa-95cb-82199a7101ea",
+      "name": "Run workflow",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "search",
+        "operation": "single",
+        "engine": "google",
+        "text": "openserp",
+        "limit": 10
+      },
+      "id": "b4923d20-7a48-438d-a676-1ac5312a132b",
+      "name": "OpenSERP",
+      "type": "@openserp/n8n-nodes-openserp.openSerp",
+      "typeVersion": 1,
+      "position": [
+        240,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Run workflow": {
+      "main": [
+        [
+          {
+            "node": "OpenSERP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

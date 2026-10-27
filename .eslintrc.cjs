@@ -20,5 +20,8 @@ module.exports = {
   ],
   rules: {
     "n8n-nodes-base/cred-class-field-documentation-url-miscased": "off",
+    // Current n8n requires NodeConnectionTypes.Main; this older plugin expects strings.
+    "n8n-nodes-base/node-class-description-inputs-wrong-regular-node": "off",
+    "n8n-nodes-base/node-class-description-outputs-wrong": "off",
   },
 };

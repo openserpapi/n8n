@@ -1,4 +1,4 @@
-import { OpenSERP, SERPError } from '@openserp/sdk';
+import { OpenSerpClient, errorDetails } from './transport';
 import type {
 	BatchExtractParams,
 	Engine,
@@ -8,10 +8,11 @@ import type {
 	MegaImageParams,
 	MegaMode,
 	MegaSearchParams,
-	OpenSERPConfig,
+	OpenSerpConfig,
 	SearchParams,
-} from '@openserp/sdk';
+} from './transport';
 import {
+	NodeConnectionTypes,
 	NodeOperationError,
 	type ICredentialDataDecryptedObject,
 	type IExecuteFunctions,
@@ -203,8 +204,8 @@ export class OpenSerp implements INodeType {
       name: "OpenSERP",
     },
     usableAsTool: true,
-    inputs: ["main"],
-    outputs: ["main"],
+    inputs: [NodeConnectionTypes.Main],
+    outputs: [NodeConnectionTypes.Main],
     credentials: [
       {
         name: "openSerpApi",
@@ -569,7 +570,7 @@ export class OpenSerp implements INodeType {
 
     for (let itemIndex = 0; itemIndex < inputItems.length; itemIndex++) {
       const credentials = await this.getCredentials("openSerpApi", itemIndex);
-      const client = new OpenSERP(toClientConfig(credentials));
+      const client = new OpenSerpClient(this, toClientConfig(credentials));
       const resource = this.getNodeParameter("resource", itemIndex) as Resource;
 
       try {
@@ -642,7 +643,7 @@ export class OpenSerp implements INodeType {
   }
 }
 
-function toClientConfig(credentials: ICredentialDataDecryptedObject): OpenSERPConfig {
+function toClientConfig(credentials: ICredentialDataDecryptedObject): OpenSerpConfig {
 	const apiKey = stringValue(credentials.apiKey);
 	const baseUrl = stringValue(credentials.baseUrl);
 	const timeoutMs = numberValue(credentials.timeoutMs);
@@ -769,7 +770,7 @@ function enginesParam(context: IExecuteFunctions, itemIndex: number): Engine[] |
 
 function fanOutResults(
 	response: unknown,
-	client: OpenSERP,
+	client: OpenSerpClient,
 	itemIndex: number,
 ): INodeExecutionData[] {
 	if (typeof response === 'string') {
@@ -809,7 +810,7 @@ function fanOutResults(
 	});
 }
 
-function singleItem(response: unknown, client: OpenSERP, itemIndex: number): INodeExecutionData {
+function singleItem(response: unknown, client: OpenSerpClient, itemIndex: number): INodeExecutionData {
 	const json = asDataObject(response);
 	json.openserp_meta = telemetryMeta(json, client);
 
@@ -821,7 +822,7 @@ function singleItem(response: unknown, client: OpenSERP, itemIndex: number): INo
 	};
 }
 
-function telemetryMeta(envelope: IDataObject, client: OpenSERP): IDataObject {
+function telemetryMeta(envelope: IDataObject, client: OpenSerpClient): IDataObject {
 	return compactObject({
 		response_meta: envelope.meta as IDataObject | undefined,
 		pagination: envelope.pagination as IDataObject | undefined,
@@ -904,14 +905,4 @@ function toOperationError(error: unknown): Error {
 
 	error.message = formatError(error);
 	return error;
-}
-
-function errorDetails(error: unknown): IDataObject {
-  if (!(error instanceof SERPError)) return {};
-  return compactObject({
-    status: error.status,
-    code: error.code,
-    request_id: error.requestId,
-    retry_after: error.retryAfter,
-  }) as IDataObject;
 }

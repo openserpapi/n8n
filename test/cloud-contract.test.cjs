@@ -9,6 +9,12 @@ function context(params, continueOnFail = false) {
     getNodeParameter: (key, _index, fallback) => params[key] ?? fallback,
     continueOnFail: () => continueOnFail,
     getNode: () => ({ name: 'OpenSERP', type: 'openSerp' }),
+    helpers: {
+      httpRequest: async ({ url, method, headers, body }) => {
+        const response = await globalThis.fetch(url, { method, headers, body });
+        return { statusCode: response.status, headers: Object.fromEntries(response.headers), body: await response.text() };
+      },
+    },
   };
 }
 
